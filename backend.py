@@ -1,4 +1,6 @@
 import random
+import time
+
 from PyQt5.QtCore import QTimer
 from frontend import Ui_MainWindow
 from PyQt5 import QtWidgets
@@ -99,6 +101,15 @@ class CONNECT4(QtWidgets.QMainWindow):
                     self.display_state()
                     self.turn = 2
                     self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
+                    k = self.ui.maxDepth.value()
+                    start = time.time()
+                    self.display_state()
+                    self.state = minimax(self.state, k)[0]
+                    end = time.time()
+                    self.turn = 1
+                    self.display_state()
+                    self.ui.frame.setEnabled(True)
+                    #print(start - end)
                     return
 
 
