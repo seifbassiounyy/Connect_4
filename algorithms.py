@@ -120,7 +120,6 @@ def check_children(state, flag):
         newAgent, newUser = getScore(child)
         if flag == 1:
             result -= newUser - user
-
         else:
             result += newAgent - agent
 
@@ -150,6 +149,7 @@ def check_zeros(state, flag):
 def checkThree(state: list[list[str]], flag: str) -> int:
     for i in range(6):
         for j in range(3):
+            # 0,1,1,1,0
             if state[i][j] == '0' and state[i][j + 1] == flag and state[i][j + 2] == flag and\
                     state[i][j + 3] == flag and state[i][j + 4] == '0':
                 if i == 0:
@@ -159,11 +159,54 @@ def checkThree(state: list[list[str]], flag: str) -> int:
                         return 1
     return 0
 
+def checkDefiniteFour(state: list[list[str]], flag: str) -> int:
+    for i in range(1,6):
+        for j in range(4):
+            #0,1,1,1
+            #0,1,1,1
+            if state[i][j] == '0' and state[i][j + 1] == flag and state[i][j + 2] == flag and state[i][j + 3] == flag:
+                if state[i-1][j] == '0' and state[i-1][j + 1] == flag and state[i-1][j + 2] == flag and state[i-1][j + 3] == flag:
+                    return 1
+            #1,1,1,0
+            #1,1,1,0
+            if state[i][j] == flag and state[i][j + 1] == flag and state[i][j + 2] == flag and state[i][j + 3] == '0':
+                if state[i-1][j] == flag and state[i-1][j + 1] == flag and state[i-1][j + 2] == flag and state[i-1][j + 3] == '0':
+                    return 1
+            # 1,0,1,1
+            # 1,0,1,1
+            if state[i][j] == flag and state[i][j + 1] == '0' and state[i][j + 2] == flag and state[i][j + 3] == flag:
+                if state[i-1][j] == flag and state[i-1][j + 1] == '0' and state[i-1][j + 2] == flag and state[i-1][j + 3] == flag:
+                    return 1
+            #1,1,0,1
+            #1,1,0,1
+            if state[i][j] == flag and state[i][j + 1] == flag and state[i][j + 2] == '0' and state[i][j + 3] == flag:
+                if state[i-1][j] == flag and state[i-1][j + 1] == flag and state[i-1][j + 2] == '0' and state[i-1][j + 3] == flag:
+                    return 1
+    return 0
+
+def checkDefiniteTwo(state: list[list[str]]) -> int:
+    for i in range(6):
+        for j in range(3):
+            # 0,0,1,1,0
+            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] == '1' and state[i][j + 3] == '1' and state[i][j + 4] == '0':
+                if i == 0:
+                    return 1
+                else:
+                    if state[i - 1][j] != '0' and state[i - 1][j + 1] != '0' and state[i - 1][j + 4] != '0':
+                        return 1
+            # 0,1,1,0,0
+            if state[i][j] == '0' and state[i][j + 1] == '1' and state[i][j + 2] == '1' and state[i][j + 3] == '0' and state[i][j + 4] == '0':
+                if i == 0:
+                    return 1
+                else:
+                    if state[i - 1][j] != '0' and state[i - 1][j + 3] != '0' and state[i - 1][j + 4] != '0':
+                        return 1
+    return 0
 
 if __name__ == '__main__':
     flag = 2
-    state = [[1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1]]
+    state = [['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1'],
+             ['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1']]
     # print(state)
     # getchildren(state, flag)
     x = is_full(state)
