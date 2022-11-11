@@ -13,11 +13,11 @@ class CONNECT4(QtWidgets.QMainWindow):
 
         self.blinked = False
         self.state = [['0' for _ in range(7)] for _ in range(6)]
-        self.turn = random.randrange(0, 2, 1)  # 1 for user's turn, 0 for computer turn
-        if self.turn:
+        self.turn = random.randrange(1, 3, 1)  # 1 for user's turn, 2 for computer turn
+        if self.turn == 1:
             self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
 
-        if self.turn == 0:
+        if self.turn == 2:
             self.ui.frame.setEnabled(False)
 
         self.timer = QTimer(self)
@@ -43,48 +43,48 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.cols = [self.col0, self.col1, self.col2, self.col3, self.col4, self.col5, self.col6]
 
         self.timer.timeout.connect(self.blink)
-        self.ui.button0.clicked.connect(lambda: self.set_state(0, '1', self.col0))
-        self.ui.button1.clicked.connect(lambda: self.set_state(1, '1', self.col1))
-        self.ui.button2.clicked.connect(lambda: self.set_state(2, '1', self.col2))
-        self.ui.button3.clicked.connect(lambda: self.set_state(3, '1', self.col3))
-        self.ui.button4.clicked.connect(lambda: self.set_state(4, '1', self.col4))
-        self.ui.button5.clicked.connect(lambda: self.set_state(5, '1', self.col5))
-        self.ui.button6.clicked.connect(lambda: self.set_state(6, '1', self.col6))
-        self.ui.button7.clicked.connect(lambda: self.set_state(0, '1', self.col0))
-        self.ui.button8.clicked.connect(lambda: self.set_state(1, '1', self.col1))
-        self.ui.button9.clicked.connect(lambda: self.set_state(2, '1', self.col2))
-        self.ui.button10.clicked.connect(lambda: self.set_state(3, '1', self.col3))
-        self.ui.button11.clicked.connect(lambda: self.set_state(4, '1', self.col4))
-        self.ui.button12.clicked.connect(lambda: self.set_state(5, '1', self.col5))
-        self.ui.button13.clicked.connect(lambda: self.set_state(6, '1', self.col6))
-        self.ui.button14.clicked.connect(lambda: self.set_state(0, '1', self.col0))
-        self.ui.button15.clicked.connect(lambda: self.set_state(1, '1', self.col0))
-        self.ui.button16.clicked.connect(lambda: self.set_state(2, '1', self.col2))
-        self.ui.button17.clicked.connect(lambda: self.set_state(3, '1', self.col3))
-        self.ui.button18.clicked.connect(lambda: self.set_state(4, '1', self.col4))
-        self.ui.button19.clicked.connect(lambda: self.set_state(5, '1', self.col5))
-        self.ui.button20.clicked.connect(lambda: self.set_state(6, '1', self.col6))
-        self.ui.button21.clicked.connect(lambda: self.set_state(0, '1', self.col0))
-        self.ui.button22.clicked.connect(lambda: self.set_state(1, '1', self.col0))
-        self.ui.button23.clicked.connect(lambda: self.set_state(2, '1', self.col2))
-        self.ui.button24.clicked.connect(lambda: self.set_state(3, '1', self.col3))
-        self.ui.button25.clicked.connect(lambda: self.set_state(4, '1', self.col4))
-        self.ui.button26.clicked.connect(lambda: self.set_state(5, '1', self.col5))
-        self.ui.button27.clicked.connect(lambda: self.set_state(6, '1', self.col6))
-        self.ui.button28.clicked.connect(lambda: self.set_state(0, '1', self.col0))
-        self.ui.button29.clicked.connect(lambda: self.set_state(1, '1', self.col0))
-        self.ui.button30.clicked.connect(lambda: self.set_state(2, '1', self.col2))
-        self.ui.button31.clicked.connect(lambda: self.set_state(3, '1', self.col3))
-        self.ui.button32.clicked.connect(lambda: self.set_state(4, '1', self.col4))
-        self.ui.button33.clicked.connect(lambda: self.set_state(5, '1', self.col5))
-        self.ui.button34.clicked.connect(lambda: self.set_state(6, '1', self.col6))
-        self.ui.button35.clicked.connect(lambda: self.set_state(0, '1', self.col0))
-        self.ui.button36.clicked.connect(lambda: self.set_state(1, '1', self.col0))
-        self.ui.button37.clicked.connect(lambda: self.set_state(2, '1', self.col2))
-        self.ui.button38.clicked.connect(lambda: self.set_state(3, '1', self.col3))
-        self.ui.button39.clicked.connect(lambda: self.set_state(4, '1', self.col4))
-        self.ui.button40.clicked.connect(lambda: self.set_state(5, '1', self.col5))
-        self.ui.button41.clicked.connect(lambda: self.set_state(6, '1', self.col6))
+        self.ui.button0.clicked.connect(lambda: self.set_state(0, str(self.turn), self.col0))
+        self.ui.button1.clicked.connect(lambda: self.set_state(1, str(self.turn), self.col1))
+        self.ui.button2.clicked.connect(lambda: self.set_state(2, str(self.turn), self.col2))
+        self.ui.button3.clicked.connect(lambda: self.set_state(3, str(self.turn), self.col3))
+        self.ui.button4.clicked.connect(lambda: self.set_state(4, str(self.turn), self.col4))
+        self.ui.button5.clicked.connect(lambda: self.set_state(5, str(self.turn), self.col5))
+        self.ui.button6.clicked.connect(lambda: self.set_state(6, str(self.turn), self.col6))
+        self.ui.button7.clicked.connect(lambda: self.set_state(0, str(self.turn), self.col0))
+        self.ui.button8.clicked.connect(lambda: self.set_state(1, str(self.turn), self.col1))
+        self.ui.button9.clicked.connect(lambda: self.set_state(2, str(self.turn), self.col2))
+        self.ui.button10.clicked.connect(lambda: self.set_state(3, str(self.turn), self.col3))
+        self.ui.button11.clicked.connect(lambda: self.set_state(4, str(self.turn), self.col4))
+        self.ui.button12.clicked.connect(lambda: self.set_state(5, str(self.turn), self.col5))
+        self.ui.button13.clicked.connect(lambda: self.set_state(6, str(self.turn), self.col6))
+        self.ui.button14.clicked.connect(lambda: self.set_state(0, str(self.turn), self.col0))
+        self.ui.button15.clicked.connect(lambda: self.set_state(1, str(self.turn), self.col1))
+        self.ui.button16.clicked.connect(lambda: self.set_state(2, str(self.turn), self.col2))
+        self.ui.button17.clicked.connect(lambda: self.set_state(3, str(self.turn), self.col3))
+        self.ui.button18.clicked.connect(lambda: self.set_state(4, str(self.turn), self.col4))
+        self.ui.button19.clicked.connect(lambda: self.set_state(5, str(self.turn), self.col5))
+        self.ui.button20.clicked.connect(lambda: self.set_state(6, str(self.turn), self.col6))
+        self.ui.button21.clicked.connect(lambda: self.set_state(0, str(self.turn), self.col0))
+        self.ui.button22.clicked.connect(lambda: self.set_state(1, str(self.turn), self.col1))
+        self.ui.button23.clicked.connect(lambda: self.set_state(2, str(self.turn), self.col2))
+        self.ui.button24.clicked.connect(lambda: self.set_state(3, str(self.turn), self.col3))
+        self.ui.button25.clicked.connect(lambda: self.set_state(4, str(self.turn), self.col4))
+        self.ui.button26.clicked.connect(lambda: self.set_state(5, str(self.turn), self.col5))
+        self.ui.button27.clicked.connect(lambda: self.set_state(6, str(self.turn), self.col6))
+        self.ui.button28.clicked.connect(lambda: self.set_state(0, str(self.turn), self.col0))
+        self.ui.button29.clicked.connect(lambda: self.set_state(1, str(self.turn), self.col1))
+        self.ui.button30.clicked.connect(lambda: self.set_state(2, str(self.turn), self.col2))
+        self.ui.button31.clicked.connect(lambda: self.set_state(3, str(self.turn), self.col3))
+        self.ui.button32.clicked.connect(lambda: self.set_state(4, str(self.turn), self.col4))
+        self.ui.button33.clicked.connect(lambda: self.set_state(5, str(self.turn), self.col5))
+        self.ui.button34.clicked.connect(lambda: self.set_state(6, str(self.turn), self.col6))
+        self.ui.button35.clicked.connect(lambda: self.set_state(0, str(self.turn), self.col0))
+        self.ui.button36.clicked.connect(lambda: self.set_state(1, str(self.turn), self.col1))
+        self.ui.button37.clicked.connect(lambda: self.set_state(2, str(self.turn), self.col2))
+        self.ui.button38.clicked.connect(lambda: self.set_state(3, str(self.turn), self.col3))
+        self.ui.button39.clicked.connect(lambda: self.set_state(4, str(self.turn), self.col4))
+        self.ui.button40.clicked.connect(lambda: self.set_state(5, str(self.turn), self.col5))
+        self.ui.button41.clicked.connect(lambda: self.set_state(6, str(self.turn), self.col6))
 
     def set_state(self, j, char, col):
         if char == '1':
@@ -97,9 +97,10 @@ class CONNECT4(QtWidgets.QMainWindow):
                 if self.state[i][j] == '0':
                     self.state[i][j] = char
                     self.display_state()
-                    self.turn = 0
+                    self.turn = 2
                     self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
                     return
+
 
     def display_state(self):
         for j, col in enumerate([self.col0, self.col1, self.col2, self.col3, self.col4, self.col5, self.col6]):
@@ -124,13 +125,13 @@ class CONNECT4(QtWidgets.QMainWindow):
 
     def reset(self):
         self.state = [['0' for _ in range(7)] for _ in range(6)]
-        self.turn = random.randrange(0, 2, 1)  # 1 for user's turn, 0 for computer turn
+        self.turn = random.randrange(1, 3, 1)  # 1 for user's turn, 2 for computer turn
         if self.turn:
             self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
         else:
             self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
 
-        if self.turn == 0:
+        if self.turn == 2:
             self.ui.frame.setEnabled(False)
         else:
             self.ui.frame.setEnabled(True)

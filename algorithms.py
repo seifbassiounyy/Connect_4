@@ -70,7 +70,7 @@ def getScore(state: list[list[str]]) -> tuple:
     user = 0
 
     # check rows
-    for i in range(5):
+    for i in range(6):
         for j in range(4):
             if state[i][j] != '0' and state[i][j] == state[i][j + 1] and state[i][j] == state[i][j + 2] and \
                     state[i][j] == state[i][j + 3]:
@@ -79,7 +79,7 @@ def getScore(state: list[list[str]]) -> tuple:
                 if state[i][j] == '2':
                     agent += 1
     # check columns
-    for j in range(6):
+    for j in range(7):
         for i in range(3):
             if state[i][j] != '0' and state[i][j] == state[i + 1][j] and state[i][j] == state[i + 2][j] and \
                     state[i][j] == state[i + 3][j]:
@@ -106,7 +106,6 @@ def getScore(state: list[list[str]]) -> tuple:
                     agent += 1
 
     return agent, user
-
 
 def get_search_tree(map):  # {state, [h, p]}):0'''
     pass
@@ -147,6 +146,18 @@ def check_zeros(state, flag):
 
     return result
 
+
+def checkThree(state: list[list[str]], flag: str) -> int:
+    for i in range(6):
+        for j in range(3):
+            if state[i][j] == '0' and state[i][j + 1] == flag and state[i][j + 2] == flag and\
+                    state[i][j + 3] == flag and state[i][j + 4] == '0':
+                if i == 0:
+                    return 1
+                else:
+                    if state[i - 1][j] != '0' and state[i - 1][j + 4] != '0':
+                        return 1
+    return 0
 
 
 if __name__ == '__main__':
