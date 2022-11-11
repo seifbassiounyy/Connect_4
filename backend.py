@@ -2,50 +2,7 @@ import random
 from PyQt5.QtCore import QTimer
 from frontend import Ui_MainWindow
 from PyQt5 import QtWidgets
-
-
-def getScore(state: list[list[str]]) -> list:
-    agent = 0
-    user = 0
-
-    # check rows
-    for i in range(5):
-        for j in range(4):
-            if state[i][j] != '0' and state[i][j] == state[i][j + 1] and state[i][j] == state[i][j + 2] and \
-                    state[i][j] == state[i][j + 3]:
-                if state[i][j] == '1':
-                    user += 1
-                if state[i][j] == '2':
-                    agent += 1
-    # check columns
-    for j in range(6):
-        for i in range(3):
-            if state[i][j] != '0' and state[i][j] == state[i + 1][j] and state[i][j] == state[i + 2][j] and \
-                    state[i][j] == state[i + 3][j]:
-                if state[i][j] == '1':
-                    user += 1
-                if state[i][j] == '2':
-                    agent += 1
-    # check diagonals
-    for i in range(3):
-        for j in range(4):
-            if state[i][j] != '0' and state[i][j] == state[i + 1][j + 1] and state[i][j] == state[i + 2][j + 2] and \
-                    state[i][j] == state[i + 3][j + 3]:
-                if state[i][j] == '1':
-                    user += 1
-                if state[i][j] == '2':
-                    agent += 1
-    for i in range(3):
-        for j in range(6, 2, -1):
-            if state[i][j] != '0' and state[i][j] == state[i + 1][j - 1] and state[i][j] == state[i + 2][j - 2] and \
-                    state[i][j] == state[i + 3][j - 3]:
-                if state[i][j] == '1':
-                    user += 1
-                if state[i][j] == '2':
-                    agent += 1
-
-    score = [agent, user]
-    return score
+from algorithms import *
 
 
 class CONNECT4(QtWidgets.QMainWindow):
@@ -153,6 +110,9 @@ class CONNECT4(QtWidgets.QMainWindow):
                     button.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
                 else:
                     button.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
+        agent, user = getScore(self.state)
+        self.ui.agent_score.setText('Agent Score:    ' + str(agent))
+        self.ui.user_score.setText('Your Score:    ' + str(user))
 
     def blink(self):
         if self.blinked:
