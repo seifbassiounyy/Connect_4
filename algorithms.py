@@ -1,45 +1,11 @@
 import sys
 
-
-def minimax(state, k):
-    beststate = recursion(state, (2 * k - 1), 1)
-
-
-def recursion(state, k, flag, alpha, beta):
-    if k == 1:
-        max = -sys.maxsize
-        children = getchildren(state)
-        for child in children:
-            h = heuristic(child)
-            if h > max:
-                max = h
-
-        return [child, max]
-
-    if flag == 2:
-        children = getchildren(state)
-        max = -sys.maxsize
-        for child in children:
-            r = recursion(child, k - 1, 0)
-            value = r[1]
-            if value > max:
-                max = value
-
-    elif flag == 1:
-        children = getchildren(state)
-        Min = sys.maxsize
-        for child in children:
-            value = recursion(child, k - 1, 1)
-            if value < Min:
-                Min = value
-
-
-def heuristic(state):
+def heuristic(state: list[list[str]]) -> int:
     score = getScore(state)
     h1 = score[0] - score[1]
 
 
-def is_full(state):
+def is_full(state: list[list[str]]) -> int:
     for col in range(7):
         for row in range(6):
             if state[row][col] == 0:
@@ -47,7 +13,7 @@ def is_full(state):
     return 1
 
 
-def getchildren(state, flag):
+def getchildren(state: list[list[str]], flag: str) -> list[list[list[str]]]:
     children = []
     for col in range(7):
         for row in range(6):
@@ -120,7 +86,6 @@ def check_children(state, flag):
         newAgent, newUser = getScore(child)
         if flag == 1:
             result -= newUser - user
-
         else:
             result += newAgent - agent
 
@@ -148,22 +113,104 @@ def check_zeros(state, flag):
 
 
 def checkThree(state: list[list[str]], flag: str) -> int:
+    result = 0
     for i in range(6):
         for j in range(3):
+            # 0,1,1,1,0
             if state[i][j] == '0' and state[i][j + 1] == flag and state[i][j + 2] == flag and\
                     state[i][j + 3] == flag and state[i][j + 4] == '0':
                 if i == 0:
-                    return 1
+                    result += 1
                 else:
                     if state[i - 1][j] != '0' and state[i - 1][j + 4] != '0':
-                        return 1
-    return 0
+                        result += 1
+    return result
+
+def checkDefiniteFour(state: list[list[str]], flag: str) -> int:
+    result = 0
+    for i in range(1,6):
+        for j in range(4):
+            #0,1,1,1
+            #0,1,1,1
+            if state[i][j] == '0' and state[i][j + 1] == flag and state[i][j + 2] == flag and state[i][j + 3] == flag:
+                if state[i-1][j] == '0' and state[i-1][j + 1] == flag and state[i-1][j + 2] == flag and state[i-1][j + 3] == flag:
+                    result += 1
+            #1,1,1,0
+            #1,1,1,0
+            if state[i][j] == flag and state[i][j + 1] == flag and state[i][j + 2] == flag and state[i][j + 3] == '0':
+                if state[i-1][j] == flag and state[i-1][j + 1] == flag and state[i-1][j + 2] == flag and state[i-1][j + 3] == '0':
+                    result += 1
+            # 1,0,1,1
+            # 1,0,1,1
+            if state[i][j] == flag and state[i][j + 1] == '0' and state[i][j + 2] == flag and state[i][j + 3] == flag:
+                if state[i-1][j] == flag and state[i-1][j + 1] == '0' and state[i-1][j + 2] == flag and state[i-1][j + 3] == flag:
+                    result += 1
+            #1,1,0,1
+            #1,1,0,1
+            if state[i][j] == flag and state[i][j + 1] == flag and state[i][j + 2] == '0' and state[i][j + 3] == flag:
+                if state[i-1][j] == flag and state[i-1][j + 1] == flag and state[i-1][j + 2] == '0' and state[i-1][j + 3] == flag:
+                    result += 1
+    return result
+
+def checkDefiniteTwo(state: list[list[str]]) -> int:
+    result = 0
+    for i in range(6):
+        for j in range(3):
+            # 0,0,1,1,0
+            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] == '1' and state[i][j + 3] == '1' and state[i][j + 4] == '0':
+                if i == 0:
+                    result += 1
+                else:
+                    if state[i - 1][j] != '0' and state[i - 1][j + 1] != '0' and state[i - 1][j + 4] != '0':
+                        result += 1
+            # 0,1,1,0,0
+            if state[i][j] == '0' and state[i][j + 1] == '1' and state[i][j + 2] == '1' and state[i][j + 3] == '0' and state[i][j + 4] == '0':
+                if i == 0:
+                    result += 1
+                else:
+                    if state[i - 1][j] != '0' and state[i - 1][j + 3] != '0' and state[i - 1][j + 4] != '0':
+                        result += 1
+    return result
+
+def max(state: list[list[str]], k: int):
+    k = (2*k) -1
+    def minmax(state: list[list[str]], k: int, flag: str):
+
+        if k == 1:
+            maximum = -sys.maxsize
+            children = getchildren(state, '2')
+            for child in children:
+                h = heuristic(child)
+                if h > maximum:
+                    maximum = h
+            return maximum
+        c = 0
+        if flag == '2':
+            children = getchildren(state,'2')
+            maximum = -sys.maxsize
+            for child in children:
+                value = minmax(child, k - 1, '1')
+                maximum = max(maximum,value)
+                c = child
+            return [c,maximum]
+
+        if flag == '1':
+            children = getchildren(state,'1')
+            minimum = sys.maxsize
+            for child in children:
+                value = minmax(child, k - 1, '2')
+                minimum = min(minimum,value)
+                c = child
+            return [c,minimum]
+
+    return minmax(state, k, '2')
+
 
 
 if __name__ == '__main__':
     flag = 2
-    state = [[1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1]]
+    state = [['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1'],
+             ['1', '1', '1', '1', '1', '1', '1'], ['1', '1', '1', '1', '1', '1', '1']]
     # print(state)
     # getchildren(state, flag)
     x = is_full(state)
