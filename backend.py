@@ -1,6 +1,5 @@
 import random
 import time
-
 from PyQt5.QtCore import QTimer
 from frontend import Ui_MainWindow
 from PyQt5 import QtWidgets
@@ -94,21 +93,21 @@ class CONNECT4(QtWidgets.QMainWindow):
             for i in range(6):
                 if self.state[i][j] == '0':
                     self.state[i][j] = char
+                    self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
                     self.display_state()
                     self.turn = 2
-                    self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
                     k = self.ui.maxDepth.value()
                     start = time.time()
-                    self.display_state()
                     self.disable()
                     self.state = minimax(self.state, k, self.ui.pruning.isChecked(), self.ui.searchTree.isChecked())[0]
                     self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
                     end = time.time()
+                    runtime = round(end - start, 2)
+                    self.ui.time.setText(str(runtime) + " sec")
                     self.turn = 1
                     self.display_state()
                     self.disable()
                     self.ui.frame.setEnabled(True)
-                    print(end - start)
                     return
 
     def disable(self):
