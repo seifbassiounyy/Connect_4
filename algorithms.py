@@ -699,5 +699,9 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
         minmax(state, k, '2', tree.create_node("Max", 0))
     if showTree:
         tree.show()
+        file = open("Tree.txt", 'r+')
+        file.truncate(0)
+        file.close()
+        tree.save2file("Tree.txt")
 
     return result

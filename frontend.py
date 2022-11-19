@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1098, 889)
+        MainWindow.resize(1098, 878)
         font = QtGui.QFont()
         font.setPointSize(11)
         MainWindow.setFont(font)
@@ -445,7 +445,7 @@ class Ui_MainWindow(object):
         self.userStart = QtWidgets.QPushButton(self.centralwidget)
         self.userStart.setGeometry(QtCore.QRect(270, 130, 181, 41))
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(11)
         self.userStart.setFont(font)
         self.userStart.setStyleSheet("background-color: rgb(0, 150, 255);")
         self.userStart.setObjectName("userStart")
@@ -470,6 +470,10 @@ class Ui_MainWindow(object):
         self.Winner_label.setScaledContents(False)
         self.Winner_label.setAlignment(QtCore.Qt.AlignCenter)
         self.Winner_label.setObjectName("Winner_label")
+        self.tree_button = QtWidgets.QPushButton(self.centralwidget)
+        self.tree_button.setGeometry(QtCore.QRect(160, 132, 91, 31))
+        self.tree_button.setStyleSheet("background-color: rgb(0, 150, 255);")
+        self.tree_button.setObjectName("tree_button")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -489,6 +493,7 @@ class Ui_MainWindow(object):
         self.userStart.setText(_translate("MainWindow", "First Turn"))
         self.agentStart.setText(_translate("MainWindow", "Second Turn"))
         self.Winner_label.setText(_translate("MainWindow", "Full"))
+        self.tree_button.setText(_translate("MainWindow", "Show Treee"))
 
 
 if __name__ == "__main__":

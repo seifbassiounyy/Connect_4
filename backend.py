@@ -1,8 +1,17 @@
 import threading
 from PyQt5.QtCore import QTimer
 from frontend import Ui_MainWindow
+from Tree_frontend import Ui_Tree_window
 from PyQt5 import QtWidgets
 from algorithms import *
+
+class TREE(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.tree_window = Ui_Tree_window()
+        self.tree_window.setupUi(self)
+
 
 
 class CONNECT4(QtWidgets.QMainWindow):
@@ -17,13 +26,14 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.ui.turn.hide()
         self.ui.Winner_label.hide()
 
-
         self.timer = QTimer(self)
         self.playTime = QTimer(self)
 
         self.ui.frame.hide()
         self.ui.user_score.hide()
         self.ui.agent_score.hide()
+
+        self.ui.tree_button.clicked.connect(self.show_tree)
 
         self.ui.reset.clicked.connect(self.reset)
         self.ui.agentStart.clicked.connect(lambda: self.set_turn(2))
@@ -92,6 +102,15 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.ui.button40.clicked.connect(lambda: self.set_state(5, str(self.turn)))
         self.ui.button41.clicked.connect(lambda: self.set_state(6, str(self.turn)))
 
+    def show_tree(self):
+        file = open("Tree.txt", "r+", encoding='utf-8')
+        tree_file = file.read()
+        tree.tree_window.label.setText(tree_file)
+        tree.show()
+        file.close()
+        pass
+
+
     def show_time(self):
         old = float(self.ui.time.text().split()[0]) if self.ui.time.text() != "" else 0
         new = round(old + 0.005, 3)
@@ -120,6 +139,7 @@ class CONNECT4(QtWidgets.QMainWindow):
         encoded = encode_state(self.state)
         self.state = minimax(encoded, self.ui.maxDepth.value(), self.ui.pruning.isChecked(),
                              self.ui.searchTree.isChecked())[0]
+
         self.display_state()
         self.ui.frame.setEnabled(True)
         self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
@@ -217,4 +237,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     gui = CONNECT4()
     gui.show()
+
+    tree = TREE()
+
     sys.exit(app.exec())
