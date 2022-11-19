@@ -1239,6 +1239,48 @@ border-radius: 50px</string>
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="userStart">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>130</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 150, 255);</string>
+    </property>
+    <property name="text">
+     <string>First Turn</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="agentStart">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>130</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 150, 255);</string>
+    </property>
+    <property name="text">
+     <string>Second Turn</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

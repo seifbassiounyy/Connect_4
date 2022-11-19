@@ -1,5 +1,4 @@
-import random
-import time
+import threading
 from PyQt5.QtCore import QTimer
 from frontend import Ui_MainWindow
 from PyQt5 import QtWidgets
@@ -14,17 +13,19 @@ class CONNECT4(QtWidgets.QMainWindow):
 
         self.blinked = False
         self.state = [['0' for _ in range(7)] for _ in range(6)]
-        self.turn = random.randrange(1, 3, 1)  # 1 for user's turn, 2 for computer turn
-        if self.turn == 1:
-            self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
-
-        if self.turn == 2:
-            self.ui.frame.setEnabled(False)
+        self.turn = 0
+        self.ui.turn.hide()
 
         self.timer = QTimer(self)
-        self.timer.start(500)
+        self.playTime = QTimer(self)
+
+        self.ui.frame.hide()
+        self.ui.user_score.hide()
+        self.ui.agent_score.hide()
 
         self.ui.reset.clicked.connect(self.reset)
+        self.ui.agentStart.clicked.connect(lambda: self.set_turn(2))
+        self.ui.userStart.clicked.connect(lambda: self.set_turn(1))
         self.ui.noPruning.toggle()
 
         self.col0 = [self.ui.button0, self.ui.button7, self.ui.button14, self.ui.button21, self.ui.button28,
@@ -44,6 +45,8 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.cols = [self.col0, self.col1, self.col2, self.col3, self.col4, self.col5, self.col6]
 
         self.timer.timeout.connect(self.blink)
+        self.playTime.timeout.connect(self.show_time)
+
         self.ui.button0.clicked.connect(lambda: self.set_state(0, str(self.turn)))
         self.ui.button1.clicked.connect(lambda: self.set_state(1, str(self.turn)))
         self.ui.button2.clicked.connect(lambda: self.set_state(2, str(self.turn)))
@@ -87,6 +90,41 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.ui.button40.clicked.connect(lambda: self.set_state(5, str(self.turn)))
         self.ui.button41.clicked.connect(lambda: self.set_state(6, str(self.turn)))
 
+    def show_time(self):
+        old = float(self.ui.time.text().split()[0]) if self.ui.time.text() != "" else 0
+        new = round(old + 0.005, 3)
+        self.ui.time.setText(str(new) + ' sec')
+
+    def set_turn(self, turn):
+        self.ui.userStart.hide()
+        self.ui.agentStart.hide()
+        self.ui.user_score.show()
+        self.ui.agent_score.show()
+        self.ui.frame.show()
+
+        self.timer.start(500)
+        self.turn = turn
+        if turn == 2:
+            self.ui.frame.setEnabled(False)
+            self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
+            thread = threading.Thread(target=self.comp_turn)
+            thread.start()
+        else:
+            self.ui.frame.setEnabled(True)
+            self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
+
+    def comp_turn(self):
+        encoded = encode_state(self.state)
+        self.state = minimax(encoded, self.ui.maxDepth.value(), self.ui.pruning.isChecked(),
+                             self.ui.searchTree.isChecked())[0]
+        self.display_state()
+        self.ui.frame.setEnabled(True)
+        self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
+        self.turn = 1
+        self.disable()
+        self.ui.reset.setEnabled(True)
+        self.playTime.stop()
+
     def set_state(self, j, char):
         if char == '1':
             self.ui.frame.setEnabled(False)
@@ -95,19 +133,14 @@ class CONNECT4(QtWidgets.QMainWindow):
                     self.state[i][j] = char
                     self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
                     self.display_state()
+                    self.ui.frame.setEnabled(False)
                     self.turn = 2
-                    k = self.ui.maxDepth.value()
-                    start = time.time()
                     self.disable()
-                    self.state = minimax(self.state, k, self.ui.pruning.isChecked(), self.ui.searchTree.isChecked())[0]
-                    self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
-                    end = time.time()
-                    runtime = round(end - start, 2)
-                    self.ui.time.setText(str(runtime) + " sec")
-                    self.turn = 1
-                    self.display_state()
-                    self.disable()
-                    self.ui.frame.setEnabled(True)
+                    self.ui.time.setText("")
+                    self.ui.reset.setEnabled(False)
+                    self.playTime.start(5)
+                    thread = threading.Thread(target=self.comp_turn)
+                    thread.start()
                     return
 
     def disable(self):
@@ -143,16 +176,14 @@ class CONNECT4(QtWidgets.QMainWindow):
 
     def reset(self):
         self.state = [['0' for _ in range(7)] for _ in range(6)]
-        self.turn = random.randrange(1, 3, 1)  # 1 for user's turn, 2 for computer turn
-        if self.turn == 1:
-            self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
-        else:
-            self.ui.turn.setStyleSheet("background-color: rgb(255, 255, 0); border-radius: 50px")
-
-        if self.turn == 2:
-            self.ui.frame.setEnabled(False)
-        else:
-            self.ui.frame.setEnabled(True)
+        self.timer.stop()
+        self.ui.turn.hide()
+        self.ui.frame.hide()
+        self.ui.user_score.hide()
+        self.ui.agent_score.hide()
+        self.ui.userStart.show()
+        self.ui.agentStart.show()
+        self.ui.time.setText("")
 
         row = [self.ui.button35, self.ui.button36, self.ui.button37, self.ui.button38, self.ui.button39,
                self.ui.button40, self.ui.button41]
