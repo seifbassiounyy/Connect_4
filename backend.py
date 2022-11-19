@@ -15,6 +15,8 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.state = [['0' for _ in range(7)] for _ in range(6)]
         self.turn = 0
         self.ui.turn.hide()
+        self.ui.Winner_label.hide()
+
 
         self.timer = QTimer(self)
         self.playTime = QTimer(self)
@@ -96,6 +98,7 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.ui.time.setText(str(new) + ' sec')
 
     def set_turn(self, turn):
+
         self.ui.userStart.hide()
         self.ui.agentStart.hide()
         self.ui.user_score.show()
@@ -126,6 +129,7 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.playTime.stop()
 
     def set_state(self, j, char):
+
         if char == '1':
             self.ui.frame.setEnabled(False)
             for i in range(6):
@@ -152,6 +156,17 @@ class CONNECT4(QtWidgets.QMainWindow):
         if is_full(self.state):
             self.timer.stop()
             self.ui.turn.hide()
+
+            score = getScore(self.state)
+
+            if score[0] > score[1]:
+                self.ui.Winner_label.show()
+                self.ui.Winner_label.setText("Agent won!")
+
+            else:
+                self.ui.Winner_label.show()
+                self.ui.Winner_label.setText("User won!")
+
 
     def display_state(self):
         for j, col in enumerate([self.col0, self.col1, self.col2, self.col3, self.col4, self.col5, self.col6]):
