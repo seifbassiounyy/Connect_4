@@ -14,7 +14,8 @@ class CONNECT4(QtWidgets.QMainWindow):
 
         self.blinked = False
         self.state = [['0' for _ in range(7)] for _ in range(6)]
-        self.turn = random.randrange(1, 3, 1)  # 1 for user's turn, 2 for computer turn
+        #self.turn = random.randrange(1, 3, 1)  # 1 for user's turn, 2 for computer turn
+        self.turn = 1
         if self.turn == 1:
             self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
 
@@ -99,7 +100,8 @@ class CONNECT4(QtWidgets.QMainWindow):
                     k = self.ui.maxDepth.value()
                     start = time.time()
                     self.disable()
-                    self.state = minimax(self.state, k, self.ui.pruning.isChecked(), self.ui.searchTree.isChecked())[0]
+                    encoded = encode_state(self.state)
+                    self.state = minimax(encoded, k, self.ui.pruning.isChecked(), self.ui.searchTree.isChecked())[0]
                     self.ui.turn.setStyleSheet("background-color: rgb(255, 0, 0); border-radius: 50px")
                     end = time.time()
                     runtime = round(end - start, 2)
@@ -172,3 +174,15 @@ if __name__ == "__main__":
     gui = CONNECT4()
     gui.show()
     sys.exit(app.exec())
+    '''state = [['1', '1', '2', '2', '0', '0'], ['2', '1', '2', '2', '0', '0'], ['1', '1', '1', '2', '0', '0'],
+             ['1', '1', '1', '2', '0', '0'], ['1', '1', '1', '2', '0', '0'], ['1', '1', '1', '2', '0', '0'],
+             ['1', '1', '1', '2', '0', '0']]
+    state = [['0', '1', '2', '0', '1', '0', '0'], ['0', '2', '0', '1', '2', '0', '0'], ['0', '0', '1', '1', '0', '0', '0'], ['0', '0', '0', '0', '0', '0', '1'], ['0', '0', '0', '0', '2', '2', '2'], ['1', '0', '0', '0', '0', '0', '1']]
+
+
+    transpose(state)
+    encode = encode_state(state)
+    print(bin(encode))
+
+    decode = decode_state(encode)
+    print(decode)'''

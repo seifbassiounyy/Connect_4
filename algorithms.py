@@ -35,6 +35,119 @@ def is_full(state: list[list[str]]) -> bool:
                 return False
     return True
 
+def transpose(state: list[list[str]]):
+
+    new_state = [['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'],
+               ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'],
+               ['0', '0', '0', '0', '0', '0']]
+
+    for col in range(6):
+
+        for row in range(6):
+            new_state[col][row] = state[row][col]
+
+    for i in range(6):
+        new_state[6][i] = state[i][6]
+
+    return new_state
+
+def transpose2(state: list[list[str]]):
+
+    new_state = [['0', '0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0', '0'],
+               ['0', '0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0', '0']]
+    for row in range(6):
+
+        for col in range(6):
+            new_state[row][col] = state[col][row]
+
+    for i in range(6):
+        new_state[i][6] = state[6][i]
+
+    return new_state
+
+def decode_state(encoded):
+    decoded = [['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'],
+             ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '0', '0'],
+             ['0', '0', '0', '0', '0', '0']]
+
+    for col in range(6, -1, -1):
+        column = encoded & 0b1111111111
+        last_piece = column >> 6
+
+        col_str = format(column, '10b')
+
+        last_piece = last_piece - 8
+
+        for row in range(4, 4 + last_piece):
+
+
+            bit = col_str[row]
+
+            if bit == '0':
+                decoded[col][row - 4] = '1'
+
+            elif bit == '1':
+                decoded[col][row - 4] = '2'
+
+            column << 1
+        encoded = encoded >> 10
+
+    decoded = transpose2(decoded)
+
+    return decoded
+
+
+def encode_state(state: list[list[str]]):
+
+    encoded_col = 0b000000
+    last_piece = 0b000
+    encoded_state = 0b000000000
+
+    state = transpose(state)
+
+    for col in range(7):
+        flag = 0
+        encoded_col = 0b0
+        last_piece = 0b000
+
+
+        for row in range(6):
+            if state[col][row] == '0':
+                last_piece = row
+                flag = 1
+
+                if last_piece == 0:
+                    last_piece = 8
+                elif last_piece == 1:
+                    last_piece = 9
+                elif last_piece == 2:
+                    last_piece = 10
+                elif last_piece == 3:
+                    last_piece = 11
+                elif last_piece == 4:
+                    last_piece = 12
+                elif last_piece == 5:
+                    last_piece = 13
+
+                for i in range(6 - row):
+                    encoded_col = encoded_col << 1
+                break
+
+            else:
+                if state[col][row] == '1':
+                    encoded_col = encoded_col << 1
+
+                if state[col][row] == '2':
+                    encoded_col = (encoded_col << 1) | 1
+
+        if flag == 0:
+            last_piece = 14
+
+        last_piece = (last_piece << 6) | encoded_col
+        encoded_state = (encoded_state << 10) | last_piece
+
+    return encoded_state
+
 
 def getchildren(state: list[list[str]], flag: str) -> list[list[list[str]]]:
     children = []
@@ -440,16 +553,18 @@ def checkTwo(state: list[list[str]]) -> tuple:
     return agent, user
 
 
-def minimax(state: list[list[str]], k: int, pruning: bool, showTree: bool):
+def minimax(state, k: int, pruning: bool, showTree: bool):
     alpha = -sys.maxsize
     beta = sys.maxsize
+
     tree = Tree()
     identifier = 1
 
-    def minmax(state: list[list[str]], k: int, flag: str, parent):
+    def minmax(state, k: int, flag: str, parent):
         nonlocal tree
         nonlocal identifier
         c = 0
+        state = decode_state(state)
         if k == 1 and flag == '2':
             maximum = -sys.maxsize
             children = getchildren(state, '2')
@@ -481,7 +596,7 @@ def minimax(state: list[list[str]], k: int, pruning: bool, showTree: bool):
                 parent_id = parent.identifier
                 parent = tree.create_node("Max", identifier, parent)
                 identifier += 1
-                value = minmax(child, k - 1, '1', parent)
+                value = minmax(encode_state(child), k - 1, '1', parent)
                 maximum = max(maximum, value[1])
                 parent = tree.get_node(parent_id)
                 if maximum == value[1]:
@@ -497,7 +612,7 @@ def minimax(state: list[list[str]], k: int, pruning: bool, showTree: bool):
                 parent_id = parent.identifier
                 parent = tree.create_node("Min", identifier, parent)
                 identifier += 1
-                value = minmax(child, k - 1, '2', parent)
+                value = minmax(encode_state(child), k - 1, '2', parent)
                 minimum = min(minimum, value[1])
                 parent = tree.get_node(parent_id)
                 if minimum == value[1]:
@@ -506,9 +621,9 @@ def minimax(state: list[list[str]], k: int, pruning: bool, showTree: bool):
 
             return c, minimum
 
-    def minmaxPruning(state: list[list[str]], k: int, flag: str):
-        nonlocal alpha
-        nonlocal beta
+    def minmaxPruning(state, k: int, flag: str, alpha, beta):
+
+        state = decode_state(state)
         c = 0
         if k == 1:
             maximum = -sys.maxsize
@@ -518,28 +633,29 @@ def minimax(state: list[list[str]], k: int, pruning: bool, showTree: bool):
                 if h > maximum:
                     maximum = h
                     c = child
+                alpha = max(alpha, h)
+                if beta <= alpha:
+                    break
             return c, maximum
 
         if flag == '2':
             children = getchildren(state, '2')
             maximum = -sys.maxsize
             for child in children:
-                value = minmaxPruning(child, k - 1, '1')
+                value = minmaxPruning(encode_state(child), k - 1, '1', alpha, beta)
                 maximum = max(maximum, value[1])
                 alpha = max(alpha, value[1])
                 if maximum == value[1]:
                     c = child
-
                 if beta <= alpha:
                     break
-
             return c, maximum
 
         if flag == '1':
             children = getchildren(state, '1')
             minimum = sys.maxsize
             for child in children:
-                value = minmaxPruning(child, k - 1, '2')
+                value = minmaxPruning(encode_state(child), k - 1, '2', alpha, beta)
                 minimum = min(minimum, value[1])
                 beta = min(beta, value[1])
 
@@ -551,8 +667,8 @@ def minimax(state: list[list[str]], k: int, pruning: bool, showTree: bool):
 
             return c, minimum
 
-    result = minmaxPruning(state, k, '2') if pruning else minmax(state, k, '2', tree.create_node("Max", 0))
-    if showTree:
-        tree.show()
+    result = minmaxPruning(state, k, '2', alpha, beta) if pruning else minmax(state, k, '2', tree.create_node("Max", 0))
+    #if showTree:
+    #tree.show()
 
     return result
