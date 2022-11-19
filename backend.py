@@ -1,16 +1,8 @@
 import threading
 from PyQt5.QtCore import QTimer
 from frontend import Ui_MainWindow
-from Tree_frontend import Ui_Tree_window
 from PyQt5 import QtWidgets
 from algorithms import *
-
-class TREE(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.tree_window = Ui_Tree_window()
-        self.tree_window.setupUi(self)
 
 
 
@@ -105,8 +97,12 @@ class CONNECT4(QtWidgets.QMainWindow):
     def show_tree(self):
         file = open("Tree.txt", "r+", encoding='utf-8')
         tree_file = file.read()
-        tree.tree_window.label.setText(tree_file)
-        tree.show()
+        #tree.tree_window.label.setText(tree_file)
+        #tree.tree_window.customlabel.setText(tree_file)
+        #tree.tree_window.customlabel.show()
+        #tree.show()
+        self.ui.customlabel.setText(tree_file)
+        self.ui.customlabel.show()
         file.close()
         pass
 
@@ -237,7 +233,5 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     gui = CONNECT4()
     gui.show()
-
-    tree = TREE()
 
     sys.exit(app.exec())
