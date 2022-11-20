@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets
 from algorithms import *
 
 
-
 class CONNECT4(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -24,12 +23,13 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.ui.frame.hide()
         self.ui.user_score.hide()
         self.ui.agent_score.hide()
+        self.ui.tree_button.setEnabled(False)
 
         self.ui.tree_button.clicked.connect(self.show_tree)
-
         self.ui.reset.clicked.connect(self.reset)
         self.ui.agentStart.clicked.connect(lambda: self.set_turn(2))
         self.ui.userStart.clicked.connect(lambda: self.set_turn(1))
+
         self.ui.noPruning.toggle()
 
         self.col0 = [self.ui.button0, self.ui.button7, self.ui.button14, self.ui.button21, self.ui.button28,
@@ -97,23 +97,16 @@ class CONNECT4(QtWidgets.QMainWindow):
     def show_tree(self):
         file = open("Tree.txt", "r+", encoding='utf-8')
         tree_file = file.read()
-        #tree.tree_window.label.setText(tree_file)
-        #tree.tree_window.customlabel.setText(tree_file)
-        #tree.tree_window.customlabel.show()
-        #tree.show()
+        file.close()
         self.ui.customlabel.setText(tree_file)
         self.ui.customlabel.show()
-        file.close()
-        pass
-
 
     def show_time(self):
         old = float(self.ui.time.text().split()[0]) if self.ui.time.text() != "" else 0
-        new = round(old + 0.005, 3)
+        new = round(old + 0.1, 3)
         self.ui.time.setText(str(new) + ' sec')
 
     def set_turn(self, turn):
-
         self.ui.userStart.hide()
         self.ui.agentStart.hide()
         self.ui.user_score.show()
@@ -143,9 +136,11 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.disable()
         self.ui.reset.setEnabled(True)
         self.playTime.stop()
+        self.ui.groupBox.setEnabled(True)
+        if self.ui.searchTree.isChecked():
+            self.ui.tree_button.setEnabled(True)
 
     def set_state(self, j, char):
-
         if char == '1':
             self.ui.frame.setEnabled(False)
             for i in range(6):
@@ -156,9 +151,11 @@ class CONNECT4(QtWidgets.QMainWindow):
                     self.ui.frame.setEnabled(False)
                     self.turn = 2
                     self.disable()
-                    self.ui.time.setText("")
+                    self.ui.time.setText("0 sec")
                     self.ui.reset.setEnabled(False)
-                    self.playTime.start(5)
+                    self.ui.groupBox.setEnabled(False)
+                    self.ui.tree_button.setEnabled(False)
+                    self.playTime.start(100)
                     thread = threading.Thread(target=self.comp_turn)
                     thread.start()
                     return
@@ -179,10 +176,13 @@ class CONNECT4(QtWidgets.QMainWindow):
                 self.ui.Winner_label.show()
                 self.ui.Winner_label.setText("Agent won!")
 
-            else:
+            elif score[0] < score[1]:
                 self.ui.Winner_label.show()
                 self.ui.Winner_label.setText("User won!")
 
+            else:
+                self.ui.Winner_label.show()
+                self.ui.Winner_label.setText("Tie!")
 
     def display_state(self):
         for j, col in enumerate([self.col0, self.col1, self.col2, self.col3, self.col4, self.col5, self.col6]):
@@ -212,8 +212,10 @@ class CONNECT4(QtWidgets.QMainWindow):
         self.ui.frame.hide()
         self.ui.user_score.hide()
         self.ui.agent_score.hide()
+        self.ui.Winner_label.hide()
         self.ui.userStart.show()
         self.ui.agentStart.show()
+        self.ui.tree_button.setEnabled(False)
         self.ui.time.setText("")
 
         row = [self.ui.button35, self.ui.button36, self.ui.button37, self.ui.button38, self.ui.button39,
@@ -233,5 +235,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     gui = CONNECT4()
     gui.show()
-
     sys.exit(app.exec())

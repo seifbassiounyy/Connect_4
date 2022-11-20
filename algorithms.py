@@ -7,8 +7,7 @@ def heuristic(state: list[list[str]]) -> int:
     heu = 100 * (score[0] - score[1])
     if is_full(state):
         return heu
-    # heu += 4 * check_children(state, '1')
-    # heu += 2 * check_children(state, '2')
+
     heu -= 10 * checkDefiniteTwo(state)
     definite_four = checkDefiniteFour(state)
     heu += 10 * definite_four[0]
@@ -99,8 +98,6 @@ def decode_state(encoded):
 
 
 def encode_state(state: list[list[str]]):
-    encoded_col = 0b000000
-    last_piece = 0b000
     encoded_state = 0b000000000
 
     state = transpose(state)
@@ -207,60 +204,119 @@ def getScore(state: list[list[str]]) -> tuple:
     return agent, user
 
 
-def check_children(state, flag):
-    children = getchildren(state, flag)
-    agent, user = getScore(state)
-    result = 0
-
-    for child in children:
-        newAgent, newUser = getScore(child)
-        if flag == '1':
-            result -= newUser - user
-        else:
-            result += newAgent - agent
-    return result
-
-
-def check_zeros(state, flag):
-    result = 0
-    agent, user = getScore(state)
-    for i in range(6):
-        for j in range(7):
-            if state[i][j] == '0':
-                newState = [state[z].copy() for z in range(6)]
-                if flag == '1':
-                    newState[i][j] = '1'
-                    newUser = getScore(newState)[1]
-                    result -= newUser - user
-
-                else:
-                    newState[i][j] = '2'
-                    newAgent = getScore(newState)[0]
-                    result += newAgent - agent
-    return result
-
-
-def checkDefiniteTwo(state: list[list[str]]) -> int:
-    result = 0
+def checkDefiniteTwo(state: list[list[str]], flag: str) -> tuple:
+    agent = 0
+    user = 0
     for i in range(6):
         for j in range(3):
             # 0,0,1,1,0
-            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] == '1' and state[i][j + 3] == '1' and \
-                    state[i][j + 4] == '0':
+            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] == flag and\
+                    state[i][j + 3] == flag and state[i][j + 4] == '0':
                 if i == 0:
-                    result += 1
+                    if state[i][j + 2] == '1':
+                        user += 1
+                    elif state[i][j + 2] == '2':
+                        agent += 1
                 else:
                     if state[i - 1][j] != '0' and state[i - 1][j + 1] != '0' and state[i - 1][j + 4] != '0':
-                        result += 1
+                        if state[i][j + 2] == '1':
+                            user += 1
+                        elif state[i][j + 2] == '2':
+                            agent += 1
             # 0,1,1,0,0
-            if state[i][j] == '0' and state[i][j + 1] == '1' and state[i][j + 2] == '1' and state[i][j + 3] == '0' and \
-                    state[i][j + 4] == '0':
+            if state[i][j] == '0' and state[i][j + 1] == flag and state[i][j + 2] == flag and\
+                    state[i][j + 3] == '0' and state[i][j + 4] == '0':
                 if i == 0:
-                    result += 1
+                    if state[i][j + 1] == '1':
+                        user += 1
+                    elif state[i][j + 1] == '2':
+                        agent += 1
                 else:
                     if state[i - 1][j] != '0' and state[i - 1][j + 3] != '0' and state[i - 1][j + 4] != '0':
-                        result += 1
-    return result
+                        if state[i][j + 1] == '1':
+                            user += 1
+                        elif state[i][j + 1] == '2':
+                            agent += 1
+
+    for i in range(2):
+        for j in range(3):
+            #             0
+            #          0
+            #       1
+            #    1
+            # 0
+            if state[i][j] == '0' and state[i + 3][j + 3] == '0' and state[i + 4][j + 4] == '0' and\
+                    state[i + 1][j + 1] == flag and state[i + 2][j + 2] == flag:
+                if i == 0 and state[i + 2][j + 3] != '0' and state[i + 3][j + 4] != '0':
+                    if state[i + 1][j + 1] == '1':
+                        user += 1
+                    elif state[i + 1][j + 1] == '2':
+                        agent += 1
+                else:
+                    if state[i - 1][j] != '0' and state[i + 2][j + 3] != '0' and state[i + 3][j + 4] != '0':
+                        if state[i + 1][j + 1] == '1':
+                            user += 1
+                        elif state[i + 1][j + 1] == '2':
+                            agent += 1
+            #             0
+            #          1
+            #       1
+            #    0
+            # 0
+            if state[i][j] == '0' and state[i + 1][j + 1] == '0' and state[i + 4][j + 4] == '0' and\
+                    state[i + 2][j + 2] == flag and state[i + 3][j + 3] == flag:
+                if i == 0 and state[i][j + 1] != '0' and state[i + 3][j + 4] != '0':
+                    if state[i + 2][j + 2] == '1':
+                        user += 1
+                    elif state[i + 2][j + 2] == '2':
+                        agent += 1
+                else:
+                    if state[i - 1][j] != '0' and state[i][j + 1] != '0' and state[i + 3][j + 4] != '0':
+                        if state[i + 2][j + 2] == '1':
+                            user += 1
+                        elif state[i + 2][j + 2] == '2':
+                            agent += 1
+
+    for i in range(2):
+        for j in range(6, 3, -1):
+            # 0
+            #   0
+            #     1
+            #       1
+            #         0
+            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 4][j - 4] == '0' and\
+                    state[i + 1][j - 1] == flag and state[i + 2][j - 2] == flag:
+                if i == 0 and state[i + 2][j - 3] != '0' and state[i + 3][j - 4] != '0':
+                    if state[i + 1][j - 1] == '1':
+                        user += 1
+                    elif state[i + 1][j - 1] == '2':
+                        agent += 1
+                else:
+                    if state[i - 1][j] != '0' and state[i + 2][j - 3] != '0' and state[i + 3][j - 4] != '0':
+                        if state[i + 1][j - 1] == '1':
+                            user += 1
+                        elif state[i + 1][j - 1] == '2':
+                            agent += 1
+            # 0
+            #   1
+            #     1
+            #       0
+            #         0
+            if state[i][j] == '0' and state[i + 1][j - 1] == '0' and state[i + 4][j - 4] == '0' and\
+                    state[i + 2][j - 2] == flag and state[i + 3][j - 3] == flag:
+                if i == 0 and state[i][j - 1] != '0' and state[i + 3][j - 4] != '0':
+                    if state[i + 2][j - 2] == '1':
+                        user += 1
+                    elif state[i + 2][j - 2] == '2':
+                        agent += 1
+                else:
+                    if state[i - 1][j] != '0' and state[i][j - 1] != '0' and state[i + 3][j - 4] != '0':
+                        if state[i + 2][j - 2] == '1':
+                            user += 1
+                        elif state[i + 2][j - 2] == '2':
+                            agent += 1
+
+    return agent, user
 
 
 def checkDefiniteThreeInRow(state: list[list[str]]) -> tuple:
@@ -348,8 +404,8 @@ def checkDefiniteFour(state: list[list[str]]) -> tuple:
                         agent += 1
             # 1,1,1,0
             # 1,1,1,0
-            if state[i][j] != '0' and state[i][j] == state[i][j + 1] and state[i][j] == state[i][j + 2] and state[i][
-                j + 3] == '0':
+            if state[i][j] != '0' and state[i][j] == state[i][j + 1] and state[i][j] == state[i][j + 2] and \
+                    state[i][j + 3] == '0':
                 if state[i - 1][j] == state[i][j] and state[i - 1][j + 1] == state[i][j] and state[i - 1][j + 2] == \
                         state[i][j] and state[i - 1][j + 3] == '0':
                     if state[i][j] == '1':
@@ -376,6 +432,117 @@ def checkDefiniteFour(state: list[list[str]]) -> tuple:
                         user += 1
                     elif state[i][j] == '2':
                         agent += 1
+
+    for i in range(1, 3):
+        for j in range(4):
+            #       0
+            #     1 0
+            #   1 1
+            # 1 1
+            # 1
+            if state[i + 3][j + 3] == '0' and state[i][j] != '0' and state[i][j] == state[i + 1][j + 1] and \
+                    state[i][j] == state[i + 2][j + 2]:
+                if state[i + 2][j + 3] == '0' and state[i - 1][j] == state[i][j] and \
+                        state[i - 1][j] == state[i][j + 1] and state[i - 1][j] == state[i + 1][j + 2]:
+                    if state[i][j] == '1':
+                        user += 1
+                    elif state[i][j] == '2':
+                        agent += 1
+            #       1
+            #     0 1
+            #   1 0
+            # 1 1
+            # 1
+            if state[i + 2][j + 2] == '0' and state[i][j] != '0' and state[i][j] == state[i + 1][j + 1] and \
+                    state[i][j] == state[i + 3][j + 3]:
+                if state[i + 1][j + 2] == '0' and state[i - 1][j] == state[i][j] and \
+                        state[i - 1][j] == state[i][j + 1] and state[i - 1][j] == state[i + 2][j + 3]:
+                    if state[i][j] == '1':
+                        user += 1
+                    elif state[i][j] == '2':
+                        agent += 1
+            #       1
+            #     1 1
+            #   0 1
+            # 1 0
+            # 1
+            if state[i + 1][j + 1] == '0' and state[i][j] != '0' and state[i][j] == state[i + 2][j + 2] and \
+                    state[i][j] == state[i + 3][j + 3]:
+                if state[i][j + 1] == '0' and state[i - 1][j] == state[i][j] and \
+                        state[i - 1][j] == state[i + 1][j + 2] and state[i - 1][j] == state[i + 2][j + 3]:
+                    if state[i][j] == '1':
+                        user += 1
+                    elif state[i][j] == '2':
+                        agent += 1
+            #       1
+            #     1 1
+            #   1 1
+            # 0 1
+            # 0
+            if state[i][j] == '0' and state[i + 1][j + 1] != '0' and state[i + 1][j + 1] == state[i + 2][j + 2] and \
+                    state[i + 1][j + 1] == state[i + 3][j + 3]:
+                if state[i - 1][j] == '0' and state[i][j + 1] == state[i + 1][j + 1] and state[i][j + 1] == \
+                        state[i + 1][j + 2] and state[i][j + 1] == state[i + 2][j + 3]:
+                    if state[i + 1][j + 1] == '1':
+                        user += 1
+                    elif state[i + 1][j + 1] == '2':
+                        agent += 1
+
+    for i in range(1, 3):
+        for j in range(6, 2, -1):
+            # 0
+            # 0 1
+            #   1 1
+            #     1 1
+            #       1
+            if state[i + 3][j - 3] == '0' and state[i][j] != '0' and state[i][j] == state[i + 1][j - 1] and \
+                    state[i][j] == state[i + 2][j - 2]:
+                if state[i + 2][j - 3] == '0' and state[i - 1][j] == state[i][j] and \
+                        state[i - 1][j] == state[i][j - 1] and state[i - 1][j] == state[i + 1][j - 2]:
+                    if state[i][j] == '1':
+                        user += 1
+                    elif state[i][j] == '2':
+                        agent += 1
+            # 1
+            # 1 0
+            #   0 1
+            #     1 1
+            #       1
+            if state[i + 2][j - 2] == '0' and state[i][j] != '0' and state[i][j] == state[i + 1][j - 1] and \
+                    state[i][j] == state[i - 3][j - 3]:
+                if state[i + 1][j - 2] == '0' and state[i - 1][j] == state[i][j] and \
+                        state[i - 1][j] == state[i][j - 1] and state[i - 1][j] == state[i + 2][j - 3]:
+                    if state[i][j] == '1':
+                        user += 1
+                    elif state[i][j] == '2':
+                        agent += 1
+            # 1
+            # 1 1
+            #   1 0
+            #     0 1
+            #       1
+            if state[i + 1][j - 1] == '0' and state[i][j] != '0' and state[i][j] == state[i + 2][j - 2] and state[i][
+                j] == state[i + 3][j - 3]:
+                if state[i][j - 1] == '0' and state[i - 1][j] == state[i][j] and \
+                        state[i - 1][j] == state[i + 1][j - 2] and state[i - 1][j] == state[i + 2][j - 3]:
+                    if state[i][j] == '1':
+                        user += 1
+                    elif state[i][j] == '2':
+                        agent += 1
+            # 1
+            # 1 1
+            #   1 1
+            #     1 0
+            #       0
+            if state[i][j] == '0' and state[i + 1][j - 1] != '0' and state[i + 1][j - 1] == state[i + 2][j - 2] and \
+                    state[i + 1][j - 1] == state[i + 3][j - 3]:
+                if state[i - 1][j] == '0' and state[i][j - 1] == state[i + 1][j - 1] and state[i][j - 1] == \
+                        state[i + 1][j - 2] and state[i][j - 1] == state[i + 2][j - 3]:
+                    if state[i + 1][j - 1] == '1':
+                        user += 1
+                    elif state[i + 1][j - 1] == '2':
+                        agent += 1
+
     return agent, user
 
 
@@ -459,8 +626,8 @@ def checkTwo(state: list[list[str]]) -> tuple:
                 elif state[i][j + 2] == '2':
                     agent += 1
             # 1,1,0,0
-            if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == '0' and state[i][
-                j + 3] == '0':
+            if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == '0' and\
+                    state[i][j + 3] == '0':
                 if state[i][j] == '1':
                     user += 1
                 elif state[i][j] == '2':
@@ -533,8 +700,8 @@ def checkTwo(state: list[list[str]]) -> tuple:
             #  1
             #    1
             #      0
-            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 1][j - 1] != '0' and state[i + 2][
-                j - 2] == state[i + 1][j - 1]:
+            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 1][j - 1] != '0' and\
+                    state[i + 2][j - 2] == state[i + 1][j - 1]:
                 if state[i + 1][j - 1] == '1':
                     user += 1
                 elif state[i + 1][j - 1] == '2':
@@ -543,8 +710,8 @@ def checkTwo(state: list[list[str]]) -> tuple:
             #   1
             #     0
             #       0
-            if state[i][j] == '0' and state[i + 1][j - 1] == '0' and state[i + 2][j - 2] != '0' and state[i + 3][
-                j - 3] == state[i + 2][j - 2]:
+            if state[i][j] == '0' and state[i + 1][j - 1] == '0' and state[i + 2][j - 2] != '0' and\
+                    state[i + 3][j - 3] == state[i + 2][j - 2]:
                 if state[i + 2][j - 2] == '1':
                     user += 1
                 elif state[i + 2][j - 2] == '2':
@@ -695,8 +862,9 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
 
             return c, minimum
 
-    result = minmaxPruning(state, k, '2', alpha, beta, tree.create_node("Max", 0)) if pruning else\
+    result = minmaxPruning(state, k, '2', alpha, beta, tree.create_node("Max", 0)) if pruning else \
         minmax(state, k, '2', tree.create_node("Max", 0))
+
     if showTree:
         tree.show()
         file = open("Tree.txt", 'r+')
