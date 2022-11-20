@@ -5,15 +5,14 @@ from treelib import Tree
 def heuristic(state: list[list[str]], turn: int) -> int:
     score = getScore(state)
     heu = 100 * (score[0] - score[1])
-    if is_full(state):
-        return heu
 
     if turn == 1:
-        heu += 10 * checkDefiniteTwo(state)[0]
-        heu -= 15 * checkDefiniteTwo(state)[1]
+        definite_two = checkDefiniteTwo(state)
+        heu += 10 * definite_two[0]
+        heu -= 100 * definite_two[1]
         definite_four = checkDefiniteFour(state)
-        heu += 10 * definite_four[0]
-        heu -= 15 * definite_four[1]
+        heu += 100 * definite_four[0]
+        heu -= 100 * definite_four[1]
         definite_three_in_row = checkDefiniteThreeInRow(state)
         heu += 10 * definite_three_in_row[0]
         heu -= 15 * definite_three_in_row[1]
@@ -28,11 +27,12 @@ def heuristic(state: list[list[str]], turn: int) -> int:
         heu -= 5 * two[1]
 
     else:
-        heu += 15 * checkDefiniteTwo(state)[0]
-        heu -= 10 * checkDefiniteTwo(state)[1]
+        definite_two = checkDefiniteTwo(state)
+        heu += 100 * definite_two[0]
+        heu -= 10 * definite_two[1]
         definite_four = checkDefiniteFour(state)
-        heu += 15 * definite_four[0]
-        heu -= 10 * definite_four[1]
+        heu += 100 * definite_four[0]
+        heu -= 100 * definite_four[1]
         definite_three_in_row = checkDefiniteThreeInRow(state)
         heu += 15 * definite_three_in_row[0]
         heu -= 10 * definite_three_in_row[1]
@@ -231,7 +231,8 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
     for i in range(6):
         for j in range(3):
             # 0,0,1,1,0
-            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] != '0' and state[i][j + 3] == state[i][j + 2] and state[i][j + 4] == '0':
+            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] != '0' and\
+                    state[i][j + 3] == state[i][j + 2] and state[i][j + 4] == '0':
                 if i == 0:
                     if state[i][j + 2] == '1':
                         user += 1
@@ -244,7 +245,8 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
                         elif state[i][j + 2] == '2':
                             agent += 1
             # 0,1,1,0,0
-            if state[i][j] == '0' and state[i][j + 1] != '0' and state[i][j + 2] == state[i][j + 1] and state[i][j + 3] == '0' and state[i][j + 4] == '0':
+            if state[i][j] == '0' and state[i][j + 1] != '0' and state[i][j + 2] == state[i][j + 1] and\
+                    state[i][j + 3] == '0' and state[i][j + 4] == '0':
                 if i == 0:
                     if state[i][j + 1] == '1':
                         user += 1
@@ -264,7 +266,8 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #       1
             #    1
             # 0
-            if state[i][j] == '0' and state[i + 3][j + 3] == '0' and state[i + 4][j + 4] == '0' and state[i + 1][j + 1] != '0' and state[i + 2][j + 2] == state[i + 1][j + 1]:
+            if state[i][j] == '0' and state[i + 3][j + 3] == '0' and state[i + 4][j + 4] == '0' and\
+                    state[i + 1][j + 1] != '0' and state[i + 2][j + 2] == state[i + 1][j + 1]:
                 if i == 0 and state[i + 2][j + 3] != '0' and state[i + 3][j + 4] != '0':
                     if state[i + 1][j + 1] == '1':
                         user += 1
@@ -281,7 +284,8 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #       1
             #    0
             # 0
-            if state[i][j] == '0' and state[i + 1][j + 1] == '0' and state[i + 4][j + 4] == '0' and state[i + 2][j + 2] != '0' and state[i + 3][j + 3] == state[i + 2][j + 2]:
+            if state[i][j] == '0' and state[i + 1][j + 1] == '0' and state[i + 4][j + 4] == '0' and\
+                    state[i + 2][j + 2] != '0' and state[i + 3][j + 3] == state[i + 2][j + 2]:
                 if i == 0 and state[i][j + 1] != '0' and state[i + 3][j + 4] != '0':
                     if state[i + 2][j + 2] == '1':
                         user += 1
@@ -301,7 +305,8 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #     1
             #       1
             #         0
-            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 4][j - 4] == '0' and state[i + 1][j - 1] != '0' and state[i + 2][j - 2] == state[i + 1][j - 1]:
+            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 4][j - 4] == '0' and\
+                    state[i + 1][j - 1] != '0' and state[i + 2][j - 2] == state[i + 1][j - 1]:
                 if i == 0 and state[i + 2][j - 3] != '0' and state[i + 3][j - 4] != '0':
                     if state[i + 1][j - 1] == '1':
                         user += 1
@@ -318,7 +323,8 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #     1
             #       0
             #         0
-            if state[i][j] == '0' and state[i + 1][j - 1] == '0' and state[i + 4][j - 4] == '0' and state[i + 2][j - 2] != '0' and state[i + 3][j - 3] == state[i + 2][j - 2]:
+            if state[i][j] == '0' and state[i + 1][j - 1] == '0' and state[i + 4][j - 4] == '0' and state[i + 2][
+                j - 2] != '0' and state[i + 3][j - 3] == state[i + 2][j - 2]:
                 if i == 0 and state[i][j - 1] != '0' and state[i + 3][j - 4] != '0':
                     if state[i + 2][j - 2] == '1':
                         user += 1
@@ -746,6 +752,14 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
         nonlocal identifier
         c = 0
         state = decode_state(state)
+
+        if is_full(state):
+            score = getScore(state)
+            h = score[0] - score[1]
+            tree.create_node(str(h), parent=parent.identifier)
+            parent.tag = "Max " + str(h) if flag == '2' else "Min " + str(h)
+            return state, h
+
         if k == 1 and flag == '2':
             maximum = -sys.maxsize
             children = getchildren(state, '2')
@@ -807,6 +821,15 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
         nonlocal identifier
 
         state = decode_state(state)
+
+        if is_full(state):
+            score = getScore(state)
+            h = score[0] - score[1]
+            tree.create_node(str(h), parent=parent.identifier)
+            parent.tag = "Max " + str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(
+                beta) if flag == '2' else "Min " + str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
+            return state, h
+
         c = 0
         if k == 1 and flag == '2':
             maximum = -sys.maxsize
@@ -870,7 +893,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if minimum == value[1]:
                     c = child
-                    parent.tag = "Min " + str(minimum) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
+                    parent.tag = "Min " + str(minimum) + '  alpha= ' + str(alpha) + '  beta= ' + str(beta)
 
                 if beta <= alpha:
                     break
