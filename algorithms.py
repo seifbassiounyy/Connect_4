@@ -4,47 +4,53 @@ from treelib import Tree
 
 def heuristic(state: list[list[str]], turn: int) -> int:
     score = getScore(state)
-    heu = 100 * (score[0] - score[1])
+    heu = 1000 * (score[0] - score[1])
 
     if turn == 1:
         definite_two = checkDefiniteTwo(state)
-        heu += 10 * definite_two[0]
-        heu -= 100 * definite_two[1]
+        heu += 50 * definite_two[0]
+        heu -= 1000 * definite_two[1]
         definite_four = checkDefiniteFour(state)
-        heu += 100 * definite_four[0]
-        heu -= 100 * definite_four[1]
+        heu += 1000 * definite_four[0]
+        heu -= 1000 * definite_four[1]
         definite_three_in_row = checkDefiniteThreeInRow(state)
-        heu += 10 * definite_three_in_row[0]
-        heu -= 15 * definite_three_in_row[1]
+        heu += 1000 * definite_three_in_row[0]
+        heu -= 1000 * definite_three_in_row[1]
         definite_three_in_diagonal = checkDefiniteThreeInDiagonal(state)
-        heu += 10 * definite_three_in_diagonal[0]
-        heu -= 15 * definite_three_in_diagonal[1]
+        heu += 1000 * definite_three_in_diagonal[0]
+        heu -= 1000 * definite_three_in_diagonal[1]
         three = checkThree(state)
-        heu += 5 * three[0]
-        heu -= 15 * three[1]
+        heu += 100 * three[0]
+        heu -= 100 * three[1]
+        columns = checkColumn(state)
+        heu += 500 * columns[0]
+        heu -= 1000 * columns[1]
         two = checkTwo(state)
-        heu += 2 * two[0]
-        heu -= 5 * two[1]
+        heu += 20 * two[0]
+        heu -= 50 * two[1]
 
     else:
         definite_two = checkDefiniteTwo(state)
         heu += 100 * definite_two[0]
-        heu -= 10 * definite_two[1]
+        heu -= 50 * definite_two[1]
         definite_four = checkDefiniteFour(state)
-        heu += 100 * definite_four[0]
-        heu -= 100 * definite_four[1]
+        heu += 1000 * definite_four[0]
+        heu -= 1000 * definite_four[1]
         definite_three_in_row = checkDefiniteThreeInRow(state)
-        heu += 15 * definite_three_in_row[0]
-        heu -= 10 * definite_three_in_row[1]
+        heu += 1000 * definite_three_in_row[0]
+        heu -= 1000 * definite_three_in_row[1]
         definite_three_in_diagonal = checkDefiniteThreeInDiagonal(state)
-        heu += 15 * definite_three_in_diagonal[0]
-        heu -= 10 * definite_three_in_diagonal[1]
+        heu += 1000 * definite_three_in_diagonal[0]
+        heu -= 1000 * definite_three_in_diagonal[1]
         three = checkThree(state)
-        heu += 15 * three[0]
-        heu -= 10 * three[1]
+        heu += 100 * three[0]
+        heu -= 100 * three[1]
+        columns = checkColumn(state)
+        heu += 1000 * columns[0]
+        heu -= 500 * columns[1]
         two = checkTwo(state)
-        heu += 5 * two[0]
-        heu -= 2 * two[1]
+        heu += 50 * two[0]
+        heu -= 20 * two[1]
     return heu
 
 
@@ -231,7 +237,7 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
     for i in range(6):
         for j in range(3):
             # 0,0,1,1,0
-            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] != '0' and\
+            if state[i][j] == '0' and state[i][j + 1] == '0' and state[i][j + 2] != '0' and \
                     state[i][j + 3] == state[i][j + 2] and state[i][j + 4] == '0':
                 if i == 0:
                     if state[i][j + 2] == '1':
@@ -245,7 +251,7 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
                         elif state[i][j + 2] == '2':
                             agent += 1
             # 0,1,1,0,0
-            if state[i][j] == '0' and state[i][j + 1] != '0' and state[i][j + 2] == state[i][j + 1] and\
+            if state[i][j] == '0' and state[i][j + 1] != '0' and state[i][j + 2] == state[i][j + 1] and \
                     state[i][j + 3] == '0' and state[i][j + 4] == '0':
                 if i == 0:
                     if state[i][j + 1] == '1':
@@ -266,7 +272,7 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #       1
             #    1
             # 0
-            if state[i][j] == '0' and state[i + 3][j + 3] == '0' and state[i + 4][j + 4] == '0' and\
+            if state[i][j] == '0' and state[i + 3][j + 3] == '0' and state[i + 4][j + 4] == '0' and \
                     state[i + 1][j + 1] != '0' and state[i + 2][j + 2] == state[i + 1][j + 1]:
                 if i == 0 and state[i + 2][j + 3] != '0' and state[i + 3][j + 4] != '0':
                     if state[i + 1][j + 1] == '1':
@@ -284,7 +290,7 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #       1
             #    0
             # 0
-            if state[i][j] == '0' and state[i + 1][j + 1] == '0' and state[i + 4][j + 4] == '0' and\
+            if state[i][j] == '0' and state[i + 1][j + 1] == '0' and state[i + 4][j + 4] == '0' and \
                     state[i + 2][j + 2] != '0' and state[i + 3][j + 3] == state[i + 2][j + 2]:
                 if i == 0 and state[i][j + 1] != '0' and state[i + 3][j + 4] != '0':
                     if state[i + 2][j + 2] == '1':
@@ -305,7 +311,7 @@ def checkDefiniteTwo(state: list[list[str]]) -> tuple:
             #     1
             #       1
             #         0
-            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 4][j - 4] == '0' and\
+            if state[i][j] == '0' and state[i + 3][j - 3] == '0' and state[i + 4][j - 4] == '0' and \
                     state[i + 1][j - 1] != '0' and state[i + 2][j - 2] == state[i + 1][j - 1]:
                 if i == 0 and state[i + 2][j - 3] != '0' and state[i + 3][j - 4] != '0':
                     if state[i + 1][j - 1] == '1':
@@ -567,6 +573,26 @@ def checkDefiniteFour(state: list[list[str]]) -> tuple:
     return agent, user
 
 
+def checkColumn(state: list[list[str]]) -> tuple:
+    user = 0
+    agent = 0
+    # check columns
+    for j in range(7):
+        for i in range(3):
+            # 0
+            # 1
+            # 1
+            # 1
+            if state[i][j] != '0' and state[i + 1][j] == state[i][j] and state[i + 2][j] == state[i][j] and \
+                    state[i + 3][j] == '0':
+                if state[i][j] == '1':
+                    user += 1
+                elif state[i][j] == '2':
+                    agent += 1
+
+    return agent, user
+
+
 def checkThree(state: list[list[str]]) -> tuple:
     agent = 0
     user = 0
@@ -581,26 +607,28 @@ def checkThree(state: list[list[str]]) -> tuple:
                 elif state[i][j + 1] == '2':
                     agent += 1
             # 1,1,1,0
-            if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == state[i][j] and state[i][
-                j + 3] == '0':
+            if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == state[i][j] and \
+                    state[i][j + 3] == '0':
                 if state[i][j] == '1':
                     user += 1
                 elif state[i][j] == '2':
                     agent += 1
-    # check columns
-    for j in range(7):
-        for i in range(3):
-            # 0
-            # 1
-            # 1
-            # 1
-            if state[i][j] != '0' and state[i + 1][j] == state[i][j] and state[i + 2][j] == state[i][j] and \
-                    state[i + 3][j] == '0':
+            # 1, 0, 1, 1
+            if state[i][j] != '0' and state[i][j + 1] == '0' and state[i][j + 2] == state[i][j] and \
+                    state[i][j + 3] == state[i][j]:
                 if state[i][j] == '1':
                     user += 1
                 elif state[i][j] == '2':
                     agent += 1
-    # check diagonals from the left
+            # 1, 1, 0, 1
+            if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == '0' and \
+                    state[i][j + 3] == state[i][j]:
+                if state[i][j] == '1':
+                    user += 1
+                elif state[i][j] == '2':
+                    agent += 1
+
+        # check diagonals from the left
     for i in range(3):
         for j in range(4):
             if state[i][j] != '0' and state[i + 1][j + 1] == state[i][j] and state[i + 2][j + 2] == state[i][j] and \
