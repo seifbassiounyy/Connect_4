@@ -745,7 +745,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
     beta = sys.maxsize
 
     tree = Tree()
-    identifier = 1
+    identifier = 0
 
     def minmax(state, k: int, flag: str, parent):
         nonlocal tree
@@ -757,6 +757,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             score = getScore(state)
             h = score[0] - score[1]
             tree.create_node(str(h), parent=parent.identifier)
+            identifier += 1
             parent.tag = "Max " + str(h) if flag == '2' else "Min " + str(h)
             return state, h
 
@@ -766,6 +767,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             for child in children:
                 h = heuristic(child, 1)
                 tree.create_node(str(h), parent=parent.identifier)
+                identifier += 1
                 if h > maximum:
                     maximum = h
                     c = child
@@ -778,6 +780,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             for child in children:
                 h = heuristic(child, 2)
                 tree.create_node(str(h), parent=parent.identifier)
+                identifier += 1
                 if h < minimum:
                     minimum = h
                     c = child
@@ -826,6 +829,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             score = getScore(state)
             h = score[0] - score[1]
             tree.create_node(str(h), parent=parent.identifier)
+            identifier += 1
             parent.tag = "Max " + str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(
                 beta) if flag == '2' else "Min " + str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
             return state, h
@@ -837,6 +841,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             for child in children:
                 h = heuristic(child, 1)
                 tree.create_node(str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta), parent=parent.identifier)
+                identifier += 1
                 alpha = max(alpha, h)
                 if h > maximum:
                     maximum = h
@@ -852,6 +857,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             for child in children:
                 h = heuristic(child, 2)
                 tree.create_node(str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta), parent=parent.identifier)
+                identifier += 1
                 beta = min(beta, h)
                 if h < minimum:
                     minimum = h
@@ -900,8 +906,8 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
 
             return c, minimum
 
-    result = minmaxPruning(state, k, '2', alpha, beta, tree.create_node("Max", 0)) if pruning else \
-        minmax(state, k, '2', tree.create_node("Max", 0))
+    result = minmaxPruning(state, k, '2', alpha, beta, tree.create_node("Max", -1)) if pruning else \
+        minmax(state, k, '2', tree.create_node("Max", -1))
 
     if showTree:
         file = open("Tree.txt", 'r+')
@@ -909,4 +915,4 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
         file.close()
         tree.save2file("Tree.txt")
 
-    return result
+    return [result, identifier]

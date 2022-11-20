@@ -127,7 +127,10 @@ class CONNECT4(QtWidgets.QMainWindow):
     def comp_turn(self):
         encoded = encode_state(self.state)
         self.state = minimax(encoded, self.ui.maxDepth.value(), self.ui.pruning.isChecked(),
-                             self.ui.searchTree.isChecked())[0]
+                             self.ui.searchTree.isChecked())
+        explored = self.state[1]
+        self.state = self.state[0][0]
+        self.ui.explored.setText(str(explored) + ' nodes')
 
         self.display_state()
         self.ui.frame.setEnabled(True)
