@@ -510,7 +510,7 @@ class Ui_MainWindow(object):
         self.Winner_label.setFont(font)
         self.Winner_label.setAutoFillBackground(False)
         self.Winner_label.setStyleSheet("background-color: rgb(0, 150, 255);\n"
-                                        "color: rgb(255, 85, 0);")
+                                        "color: rgb(255, 0, 0);")
         self.Winner_label.setTextFormat(QtCore.Qt.PlainText)
         self.Winner_label.setScaledContents(False)
         self.Winner_label.setAlignment(QtCore.Qt.AlignCenter)
