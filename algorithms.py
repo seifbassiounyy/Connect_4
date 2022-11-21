@@ -844,12 +844,12 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             children = getchildren(state, '2')
             for child in children:
                 h = heuristic(child, 1)
-                tree.create_node(str(h), parent=parent.identifier)
+                tree.create_node(str(h) + ' state= ' + child.__str__(), parent=parent.identifier)
                 identifier += 1
                 if h > maximum:
                     maximum = h
                     c = child
-                    parent.tag = "Max " + str(maximum)
+                    parent.tag = "Max " + str(maximum) + ' state= ' + c.__str__()
             return c, maximum
 
         if k == 1 and flag == '1':
@@ -857,12 +857,12 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             children = getchildren(state, '1')
             for child in children:
                 h = heuristic(child, 2)
-                tree.create_node(str(h), parent=parent.identifier)
+                tree.create_node(str(h) + ' state= ' + child.__str__(), parent=parent.identifier)
                 identifier += 1
                 if h < minimum:
                     minimum = h
                     c = child
-                    parent.tag = "Min " + str(minimum)
+                    parent.tag = "Min " + str(minimum) + ' state= ' + c.__str__()
             return c, minimum
 
         if flag == '2':
@@ -877,7 +877,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if maximum == value[1]:
                     c = child
-                    parent.tag = "Max " + str(maximum)
+                    parent.tag = "Max " + str(maximum) + ' state= ' + c.__str__()
 
             return c, maximum
 
@@ -893,7 +893,7 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if minimum == value[1]:
                     c = child
-                    parent.tag = "Min " + str(minimum)
+                    parent.tag = "Min " + str(minimum) + ' state= ' + c.__str__()
 
             return c, minimum
 
@@ -927,6 +927,8 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 if h > maximum:
                     maximum = h
                     c = child
+                    parent.tag = "Max " + str(maximum) + ' alpha= ' + str(alpha) + ' beta= ' + str(
+                        beta) + ' state= ' + c.__str__()
                 if beta <= alpha:
                     break
             return c, maximum
@@ -937,15 +939,15 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             for child in children:
                 h = heuristic(child, 2)
                 beta = min(beta, h)
-                state_str = ''
-                for row in reversed(child):
-                    state_str += ' '.join(row)
-                tree.create_node(str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta) + ' state= ' + state_str,
-                                 parent=parent.identifier)
+                tree.create_node(
+                    str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta) + ' state= ' + child.__str__(),
+                    parent=parent.identifier)
                 identifier += 1
                 if h < minimum:
                     minimum = h
                     c = child
+                    parent.tag = "Min " + str(minimum) + ' alpha= ' + str(alpha) + ' beta= ' + str(
+                        beta) + ' state= ' + c.__str__()
                 if beta <= alpha:
                     break
             return c, minimum
@@ -963,11 +965,8 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if maximum == value[1]:
                     c = child
-                    state_str = ''
-                    for row in reversed(c):
-                        state_str += ' '.join(row)
                     parent.tag = "Max " + str(maximum) + ' alpha= ' + str(alpha) + ' beta= ' + str(
-                        beta) + ' state= ' + state_str
+                        beta) + ' state= ' + child.__str__()
 
                 if beta <= alpha:
                     break
@@ -986,13 +985,8 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if minimum == value[1]:
                     c = child
-                    state_str = ''
-                    for row in reversed(c):
-                        state_str += ' '.join(row)
-                        state_str += '\n\t\t\t\t\t'
-                    state_str = state_str[:-1]
                     parent.tag = "Min " + str(minimum) + ' alpha= ' + str(alpha) + ' beta= ' + str(
-                        beta) + ' state= ' + state_str
+                        beta) + ' state= ' + child.__str__()
 
                 if beta <= alpha:
                     break
