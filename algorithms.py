@@ -1,5 +1,20 @@
 import sys
 from treelib import Tree
+import random
+
+
+def check_children(state, flag):
+    children = getchildren(state, flag)
+    agent, user = getScore(state)
+    result = 0
+
+    for child in children:
+        newAgent, newUser = getScore(child)
+        if flag == '1':
+            result -= newUser - user
+        else:
+            result += newAgent - agent
+    return result
 
 
 def heuristic(state: list[list[str]], turn: int) -> int:
@@ -20,14 +35,14 @@ def heuristic(state: list[list[str]], turn: int) -> int:
         heu += 1000 * definite_three_in_diagonal[0]
         heu -= 1000 * definite_three_in_diagonal[1]
         three = checkThree(state)
-        heu += 100 * three[0]
+        heu += 10 * three[0]
         heu -= 100 * three[1]
         columns = checkColumn(state)
         heu += 500 * columns[0]
         heu -= 1000 * columns[1]
         two = checkTwo(state)
-        heu += 20 * two[0]
-        heu -= 50 * two[1]
+        heu += 10 * two[0]
+        heu -= 100 * two[1]
 
     else:
         definite_two = checkDefiniteTwo(state)
@@ -44,13 +59,13 @@ def heuristic(state: list[list[str]], turn: int) -> int:
         heu -= 1000 * definite_three_in_diagonal[1]
         three = checkThree(state)
         heu += 100 * three[0]
-        heu -= 100 * three[1]
+        heu -= 10 * three[1]
         columns = checkColumn(state)
         heu += 1000 * columns[0]
         heu -= 500 * columns[1]
         two = checkTwo(state)
-        heu += 50 * two[0]
-        heu -= 20 * two[1]
+        heu += 100 * two[0]
+        heu -= 10 * two[1]
     return heu
 
 
@@ -186,6 +201,7 @@ def getchildren(state: list[list[str]], flag: str) -> list[list[list[str]]]:
                     child[row][col] = '2'
                     children.append(child)
                 break
+    random.shuffle(children)
     return children
 
 
@@ -604,29 +620,63 @@ def checkThree(state: list[list[str]]) -> tuple:
                     state[i][j + 3] == state[i][j + 1]:
                 if state[i][j + 1] == '1':
                     user += 1
+                    if i == 0:
+                        user += 9
+                    elif state[i - 1][j] != '0':
+                        user += 9
                 elif state[i][j + 1] == '2':
                     agent += 1
+                    if i == 0:
+                        agent += 9
+                    elif state[i - 1][j] != '0':
+                        agent += 9
             # 1,1,1,0
             if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == state[i][j] and \
                     state[i][j + 3] == '0':
                 if state[i][j] == '1':
                     user += 1
+                    if i == 0:
+                        user += 9
+                    elif state[i - 1][j + 3] != '0':
+                        user += 9
                 elif state[i][j] == '2':
                     agent += 1
+                    if i == 0:
+                        agent += 9
+                    elif state[i - 1][j + 3] != '0':
+                        agent += 9
+
             # 1, 0, 1, 1
             if state[i][j] != '0' and state[i][j + 1] == '0' and state[i][j + 2] == state[i][j] and \
                     state[i][j + 3] == state[i][j]:
                 if state[i][j] == '1':
                     user += 1
+                    if i == 0:
+                        user += 9
+                    elif state[i - 1][j + 1] != '0':
+                        user += 9
                 elif state[i][j] == '2':
                     agent += 1
+                    if i == 0:
+                        agent += 9
+                    elif state[i - 1][j + 1] != '0':
+                        agent += 9
+
             # 1, 1, 0, 1
             if state[i][j] != '0' and state[i][j + 1] == state[i][j] and state[i][j + 2] == '0' and \
                     state[i][j + 3] == state[i][j]:
                 if state[i][j] == '1':
                     user += 1
+                    if i == 0:
+                        user += 9
+                    elif state[i - 1][j + 2] != '0':
+                        user += 9
                 elif state[i][j] == '2':
                     agent += 1
+                    if i == 0:
+                        agent += 9
+                    elif state[i - 1][j + 2] != '0':
+                        agent += 9
 
         # check diagonals from the left
     for i in range(3):
@@ -769,8 +819,8 @@ def checkTwo(state: list[list[str]]) -> tuple:
 
 
 def minimax(state, k: int, pruning: bool, showTree: bool):
-    alpha = -sys.maxsize
-    beta = sys.maxsize
+    alpha = float('-inf')
+    beta = float('inf')
 
     tree = Tree()
     identifier = 0
@@ -859,7 +909,8 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             tree.create_node(str(h), parent=parent.identifier)
             identifier += 1
             parent.tag = "Max " + str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(
-                beta) if flag == '2' else "Min " + str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
+                beta) + ' state= ' + state.__str__() if flag == '2' else "Min " + str(h) + ' alpha= ' + str(
+                alpha) + ' beta= ' + str(beta) + ' state= ' + state.__str__()
             return state, h
 
         c = 0
@@ -868,13 +919,14 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             children = getchildren(state, '2')
             for child in children:
                 h = heuristic(child, 1)
-                tree.create_node(str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta), parent=parent.identifier)
-                identifier += 1
                 alpha = max(alpha, h)
+                tree.create_node(
+                    str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta) + ' state= ' + child.__str__(),
+                    parent=parent.identifier)
+                identifier += 1
                 if h > maximum:
                     maximum = h
                     c = child
-                    parent.tag = "Max " + str(maximum) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
                 if beta <= alpha:
                     break
             return c, maximum
@@ -884,13 +936,16 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
             children = getchildren(state, '1')
             for child in children:
                 h = heuristic(child, 2)
-                tree.create_node(str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta), parent=parent.identifier)
-                identifier += 1
                 beta = min(beta, h)
+                state_str = ''
+                for row in reversed(child):
+                    state_str += ' '.join(row)
+                tree.create_node(str(h) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta) + ' state= ' + state_str,
+                                 parent=parent.identifier)
+                identifier += 1
                 if h < minimum:
                     minimum = h
                     c = child
-                    parent.tag = "Min " + str(minimum) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
                 if beta <= alpha:
                     break
             return c, minimum
@@ -908,7 +963,11 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if maximum == value[1]:
                     c = child
-                    parent.tag = "Max " + str(maximum) + ' alpha= ' + str(alpha) + ' beta= ' + str(beta)
+                    state_str = ''
+                    for row in reversed(c):
+                        state_str += ' '.join(row)
+                    parent.tag = "Max " + str(maximum) + ' alpha= ' + str(alpha) + ' beta= ' + str(
+                        beta) + ' state= ' + state_str
 
                 if beta <= alpha:
                     break
@@ -927,7 +986,13 @@ def minimax(state, k: int, pruning: bool, showTree: bool):
                 parent = tree.get_node(parent_id)
                 if minimum == value[1]:
                     c = child
-                    parent.tag = "Min " + str(minimum) + '  alpha= ' + str(alpha) + '  beta= ' + str(beta)
+                    state_str = ''
+                    for row in reversed(c):
+                        state_str += ' '.join(row)
+                        state_str += '\n\t\t\t\t\t'
+                    state_str = state_str[:-1]
+                    parent.tag = "Min " + str(minimum) + ' alpha= ' + str(alpha) + ' beta= ' + str(
+                        beta) + ' state= ' + state_str
 
                 if beta <= alpha:
                     break
